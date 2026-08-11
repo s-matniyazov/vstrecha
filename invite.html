@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Приглашение на встречу 💕</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Segoe UI', 'Helvetica Neue', system-ui, sans-serif;
+    background: radial-gradient(circle at 30% 20%, #2a0a18 0%, #12050a 55%, #000000 100%);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* floating hearts background */
+  .heart-bg {
+    position: fixed;
+    bottom: -40px;
+    color: rgba(255, 92, 141, 0.35);
+    font-size: 24px;
+    animation: rise linear infinite;
+    pointer-events: none;
+    user-select: none;
+  }
+  @keyframes rise {
+    0%   { transform: translateY(0) scale(0.6); opacity: 0; }
+    10%  { opacity: 0.8; }
+    90%  { opacity: 0.5; }
+    100% { transform: translateY(-110vh) scale(1.1); opacity: 0; }
+  }
+
+  .card {
+    position: relative;
+    z-index: 2;
+    width: min(92vw, 480px);
+    background: linear-gradient(160deg, rgba(40,10,22,0.92), rgba(10,4,7,0.95));
+    border: 1px solid rgba(255,92,141,0.35);
+    border-radius: 26px;
+    padding: 42px 32px 38px;
+    box-shadow: 0 0 60px rgba(255,45,110,0.25), inset 0 0 40px rgba(255,92,141,0.06);
+    backdrop-filter: blur(6px);
+    text-align: center;
+  }
+
+  .progress {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 26px;
+  }
+  .dot {
+    width: 34px; height: 5px; border-radius: 6px;
+    background: rgba(255,92,141,0.2);
+    transition: background .4s;
+  }
+  .dot.active { background: linear-gradient(90deg,#ff2d6e,#ff8fb0); box-shadow: 0 0 10px #ff2d6e; }
+
+  .step { display: none; animation: fade .5s ease; }
+  .step.show { display: block; }
+  @keyframes fade { from { opacity:0; transform: translateY(12px);} to {opacity:1; transform:none;} }
+
+  .q {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.35;
+    margin-bottom: 6px;
+    background: linear-gradient(90deg,#ff5c8d,#ffd0dc);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .sub { font-size: 13px; color: rgba(255,255,255,0.45); margin-bottom: 26px; }
+
+  .options { display: flex; flex-direction: column; gap: 14px; align-items: center; }
+
+  .opt {
+    width: 100%;
+    padding: 15px 18px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,92,141,0.4);
+    background: rgba(255,92,141,0.08);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform .15s, background .25s, box-shadow .25s;
+  }
+  .opt.yes:hover {
+    background: linear-gradient(90deg,#ff2d6e,#ff6f9c);
+    box-shadow: 0 0 22px rgba(255,45,110,0.6);
+    transform: translateY(-2px);
+  }
+
+  /* the "no" options run away and can't be caught */
+  .opt.no {
+    position: relative;
+    transition: transform .18s cubic-bezier(.5,1.6,.5,1), background .2s;
+    border-color: rgba(150,150,160,0.35);
+    background: rgba(120,120,130,0.08);
+    color: rgba(220,220,230,0.75);
+  }
+
+  .final { display:none; }
+  .final.show { display:block; animation: fade .6s ease; }
+  .final .big {
+    font-size: 46px; margin-bottom: 14px;
+  }
+  .final h1 {
+    font-size: 26px; margin-bottom: 12px;
+    background: linear-gradient(90deg,#ff2d6e,#ffd0dc);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .final p { color: rgba(255,255,255,0.7); font-size: 15px; line-height:1.6; }
+
+  .phone {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 22px;
+    border-radius: 14px;
+    text-decoration: none;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    color: #fff;
+    background: linear-gradient(90deg,#ff2d6e,#ff6f9c);
+    box-shadow: 0 0 22px rgba(255,45,110,0.5);
+    transition: transform .15s;
+  }
+  .phone:hover { transform: translateY(-2px) scale(1.03); }
+
+  .footer-note { margin-top: 26px; font-size: 11px; color: rgba(255,255,255,0.25); }
+</style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="progress">
+      <div class="dot active" id="d1"></div>
+      <div class="dot" id="d2"></div>
+      <div class="dot" id="d3"></div>
+    </div>
+
+    <!-- Шаг 1 -->
+    <div class="step show" id="step1">
+      <div class="q">Пойдёшь со мной на встречу, чарующая и несравненная Сафидабону? 💕</div>
+      <div class="sub">Шаг 1 из 3</div>
+      <div class="options">
+        <button class="opt yes" onclick="next(2)">Да 😊</button>
+        <button class="opt no" onmouseover="runAway(this)" onclick="runAway(this)">Нет 🙈</button>
+      </div>
+    </div>
+
+    <!-- Шаг 2 -->
+    <div class="step" id="step2">
+      <div class="q">Когда у тебя будет время?</div>
+      <div class="sub">Шаг 2 из 3</div>
+      <div class="options">
+        <button class="opt no" onmouseover="runAway(this)" onclick="runAway(this)">Сегодня</button>
+        <button class="opt no" onmouseover="runAway(this)" onclick="runAway(this)">Завтра</button>
+        <button class="opt yes" onclick="next(3)">На следующей неделе 🗓️</button>
+      </div>
+    </div>
+
+    <!-- Шаг 3 -->
+    <div class="step" id="step3">
+      <div class="q">Дашь свой номер, поговорим?</div>
+      <div class="sub">Шаг 3 из 3</div>
+      <div class="options">
+        <button class="opt no" onmouseover="runAway(this)" onclick="runAway(this)">Нет</button>
+        <button class="opt yes" onclick="finish()">Да, конечно ❤️</button>
+        <button class="opt no" onmouseover="runAway(this)" onclick="runAway(this)">Нет, забери свой камень 🪨</button>
+      </div>
+    </div>
+
+    <!-- Финал -->
+    <div class="final" id="final">
+      <div class="big">🌹💖🌹</div>
+      <h1>Ура! Это свидание!</h1>
+      <p>Спасибо, Сафидабону 💕<br>Тогда встретимся на следующей неделе.<br>Я уже считаю дни ✨</p>
+      <a class="phone" href="tel:+998913030240">📞 +998 91 303 02 40</a>
+    </div>
+
+    <div class="footer-note">сделано с любовью 💌</div>
+  </div>
+
+<script>
+  function next(step){
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('show'));
+    document.getElementById('step'+step).classList.add('show');
+    for(let i=1;i<=3;i++){
+      document.getElementById('d'+i).classList.toggle('active', i<=step);
+    }
+  }
+
+  function finish(){
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('show'));
+    document.getElementById('final').classList.add('show');
+    document.getElementById('d3').classList.add('active');
+    burst();
+  }
+
+  // makes the "no" buttons dodge the cursor — impossible to select
+  function runAway(btn){
+    const card = btn.closest('.card').getBoundingClientRect();
+    const b = btn.getBoundingClientRect();
+    const maxX = card.width - b.width - 24;
+    const maxY = card.height - b.height - 24;
+    const dx = (Math.random()*2 - 1) * Math.min(maxX/2, 120);
+    const dy = (Math.random()*2 - 1) * Math.min(maxY/2, 90);
+    btn.style.transform = `translate(${dx}px, ${dy}px) rotate(${(Math.random()*20-10)}deg)`;
+  }
+
+  // little heart confetti on success
+  function burst(){
+    const emojis = ['🌹','🌸','🌷','🌺','🌼','💐'];
+    for(let i=0;i<28;i++){
+      const el = document.createElement('div');
+      el.className = 'heart-bg';
+      el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+      el.style.left = Math.random()*100 + 'vw';
+      el.style.fontSize = (16 + Math.random()*26) + 'px';
+      el.style.animationDuration = (5 + Math.random()*6) + 's';
+      el.style.animationDelay = (Math.random()*2) + 's';
+      document.body.appendChild(el);
+    }
+  }
+
+  // ambient background hearts
+  (function ambient(){
+    const emojis = ['🌸','🌷','🌺','🌼'];
+    for(let i=0;i<14;i++){
+      const el = document.createElement('div');
+      el.className = 'heart-bg';
+      el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+      el.style.left = Math.random()*100 + 'vw';
+      el.style.fontSize = (14 + Math.random()*22) + 'px';
+      el.style.animationDuration = (7 + Math.random()*8) + 's';
+      el.style.animationDelay = (Math.random()*8) + 's';
+      document.body.appendChild(el);
+    }
+  })();
+</script>
+</body>
+</html>
